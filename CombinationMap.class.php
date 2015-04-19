@@ -4,14 +4,12 @@ require_once implode(DIRECTORY_SEPARATOR, array(__DIR__, 'php-utils', 'php-utils
 
 class CombinationMap
 {
-   private $name;
    private $delimiter;
    private $quoted_delimiter;
    private $array;
 
    public function __construct($delimiter = ',')
    {
-      $this->name             = __CLASS__ . '::';
       $this->delimiter        = $delimiter;
       $this->quoted_delimiter = $this->quote($delimiter);
       $this->array            = array();
@@ -39,7 +37,7 @@ class CombinationMap
 
    public function apply(array $combination, $function)
    {
-      ensure(is_callable($function), type_violation_message($this->name . __FUNCTION__, 'The second argument', 'callable', $function));
+      ensure(is_callable($function), type_violation_message('The second argument', 'callable', $function));
       $key = $this->toKey($combination);
       $this->array[$key] = $function(array_get($this->array, $key));
    }
@@ -61,7 +59,7 @@ class CombinationMap
 
    public function map($function)
    {
-      ensure(is_callable($function), type_violation_message($this->name . __FUNCTION__, 'The first argument', 'callable', $function));
+      ensure(is_callable($function), type_violation_message('The first argument', 'callable', $function));
       $cm        = new CombinationMap($this->delimiter);
       $cm->array = array_map($function, $this->array);
       return $cm;
@@ -69,7 +67,7 @@ class CombinationMap
 
    public function reduce($function, $initialize = null)
    {
-      ensure(is_callable($function), type_violation_message($this->name . __FUNCTION__, 'The first argument', 'callable', $function));
+      ensure(is_callable($function), type_violation_message('The first argument', 'callable', $function));
       return array_reduce($this->array, $function, $initialize);
    }
 
@@ -112,7 +110,7 @@ class CombinationMap
    public function fromArrays(array $arrays)
    {
       foreach ($arrays as $array) {
-         ensure(is_array($array), type_violation_message($this->name . __FUNCTION__, 'Each element', 'array', $array));
+         ensure(is_array($array), type_violation_message('Each element', 'array', $array));
          list($combination, $value) = array_depeditate($array);
          $this->array[$this->toKey($combination)] = $value;
       }
