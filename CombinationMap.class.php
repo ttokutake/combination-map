@@ -116,7 +116,7 @@ class CombinationMap
       }
    }
 
-   public function beginWith(array $partial_combination)
+   public function startWith(array $partial_combination)
    {
       return $this->part('left', $partial_combination);
    }
@@ -126,9 +126,9 @@ class CombinationMap
       return $this->part('right', $partial_combination);
    }
 
-   public function bothEndsWith(array $begin_combination, array $end_combination)
+   public function bothEndsWith(array $start_combination, array $end_combination)
    {
-      return $this->part('both', $begin_combination, $end_combination);
+      return $this->part('both', $start_combination, $end_combination);
    }
 
 

@@ -182,10 +182,10 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     */
    public function testBeginWith($cm)
    {
-      $this->assertEquals(['blowser' => $this->associative['blowser']], $cm->beginWith(['blowser'])->toAssociative());
-      $this->assertEquals(['os' => ['linux' => $this->associative['os']['linux']]], $cm->beginWith(['os', 'linux'])->toAssociative());
+      $this->assertEquals(['blowser' => $this->associative['blowser']], $cm->startWith(['blowser'])->toAssociative());
+      $this->assertEquals(['os' => ['linux' => $this->associative['os']['linux']]], $cm->startWith(['os', 'linux'])->toAssociative());
       $expected = ['os' => ['linux' => ['ubuntu' => $this->associative['os']['linux']['ubuntu']]]];
-      $this->assertEquals($expected, $cm->beginWith(['os', '*', 'ubuntu'])->toAssociative());
+      $this->assertEquals($expected, $cm->startWith(['os', '*', 'ubuntu'])->toAssociative());
    }
 
    /**
