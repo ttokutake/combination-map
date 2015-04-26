@@ -148,16 +148,6 @@ class CombinationMap
       return $this->part('right', $partial_combination);
    }
 
-   public function bothEndsWith(array $start_combination, array $end_combination)
-   {
-      return $this->part('both', $start_combination, $end_combination);
-   }
-
-
-   private function quote($str)
-   {
-      return preg_quote($str, '/');
-   }
 
    private function toKey(array $combination)
    {
@@ -175,6 +165,10 @@ class CombinationMap
       }
    }
 
+   private function quote($str)
+   {
+      return preg_quote($str, '/');
+   }
    private function wrap($regex) {
       return "/$regex/u";
    }
