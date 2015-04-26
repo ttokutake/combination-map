@@ -208,4 +208,21 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
       $expected = ['os' => ['linux' => ['ubuntu' => $this->associative['os']['linux']['ubuntu']]]];
       $this->assertEquals($expected, $cm->endWith(['ubuntu'])->toAssociative());
    }
+
+   /**
+    * @depends testToAssociative
+    */
+   public function testHave($cm)
+   {
+      $expected = [
+         'os' => [
+            'linux'   => [
+               'ubuntu' => 310,
+               'centos' => 320,
+               'gentoo' => 330,
+            ],
+         ]
+      ];
+      $this->assertEquals($expected, $cm->have(['linux'])->toAssociative());
+   }
 }

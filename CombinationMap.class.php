@@ -148,6 +148,11 @@ class CombinationMap
       return $this->part('right', $partial_combination);
    }
 
+   public function have(array $partial_combination)
+   {
+      return $this->part('include', $partial_combination);
+   }
+
 
    private function toKey(array $combination)
    {
@@ -173,19 +178,22 @@ class CombinationMap
       return "/$regex/u";
    }
 
-   private function part($type, array $first_combination, array $second_combination = array())
+   private function part($type, array $partial_combination)
    {
-      $first_regex = implode($this->quoted_delimiter, $this->escape($first_combination));
+      $regex = implode($this->quoted_delimiter, $this->escape($partial_combination));
       switch ($type) {
          case 'left':
-            $regex = "^$first_regex";
+            $regex = "^$regex";
             break;
          case 'right':
-            $regex = "$first_regex$";
+            $regex = "$regex$";
             break;
-         case 'both':
-            $second_regex = implode($this->quoted_delimiter, $this->escape($second_combination));
-            $regex        = "^$first_regex.*$second_regex$";
+         case 'include':
+            $start_with = "^$regex";
+            $end_with   = "$regex$";
+            $just       = "^$regex$";
+            $include    = wrap($regex, $this->quoted_delimiter);
+            $regex      = "($start_with|$end_with|$include|$just)";
             break;
          default:
             throw new LogicException('This line must not be passed!');
