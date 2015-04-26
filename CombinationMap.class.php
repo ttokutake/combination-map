@@ -1,6 +1,16 @@
 <?php
 
+/**
+ * This file is part of the php-utils.php package.
+ *
+ * Copyright (C) 2015 Tadatoshi Tokutake <tadatoshi.tokutake@gmail.com>
+ *
+ * Licensed under the MIT License
+ */
+
+
 require_once implode(DIRECTORY_SEPARATOR, array(__DIR__, 'php-utils', 'php-utils.php'));
+
 
 class CombinationMap
 {
