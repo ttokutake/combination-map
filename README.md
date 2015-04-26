@@ -12,5 +12,21 @@ MIT Licence
 ## Example
 
 ```php
-echo 'Under construction';
+require_once PATH_TO_COMBINATION_MAP . 'CombinationMap.class.php';
+
+$assoc = [
+   'fruit' => [
+      'apple'  => 100,
+      'orange' =>  50,
+      'lemon'  =>  80,
+   ],
+   'sweet' => [
+      'snickers' => 110,
+      'kitkat'   => 150,
+      'lolipop'  =>  30,
+   ],
+];
+$cm = new CombinationMap(',');
+$cm->fromAssociative($assoc);
+$cm->dump();
 ```
