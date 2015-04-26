@@ -178,6 +178,18 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    }
 
    /**
+    * @depends testSetAndSize
+    */
+   public function testShave($cm)
+   {
+      $shoven = $cm->shave(['os', 'linux']);
+      $copy   = $this->associative;
+      unset($copy['os']['linux']);
+      $expected = array_merge($copy, $this->associative['os']['linux']);
+      $this->assertEquals($expected, $shoven->toAssociative());
+   }
+
+   /**
     * @depends testToAssociative
     */
    public function testBeginWith($cm)

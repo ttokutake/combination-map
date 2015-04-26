@@ -126,6 +126,18 @@ class CombinationMap
       }
    }
 
+   public function shave(array $partial_combination)
+   {
+      $regex  = '^' . follow_join($this->quoted_delimiter, $this->escape($partial_combination));
+      $shoven = array();
+      foreach ($this->array as $key => $value) {
+         $shoven[preg_replace($this->wrap($regex), '', $key)] = $value;
+      }
+      $cm        = new CombinationMap($this->delimiter);
+      $cm->array = $shoven;
+      return $cm;
+   }
+
    public function startWith(array $partial_combination)
    {
       return $this->part('left', $partial_combination);
@@ -163,6 +175,10 @@ class CombinationMap
       }
    }
 
+   private function wrap($regex) {
+      return "/$regex/u";
+   }
+
    private function part($type, array $first_combination, array $second_combination = array())
    {
       $first_regex = implode($this->quoted_delimiter, $this->escape($first_combination));
@@ -183,7 +199,7 @@ class CombinationMap
 
       $part = array();
       foreach ($this->array as $key => $value) {
-         if (preg_match("/$regex/u", $key) === 1) {
+         if (preg_match($this->wrap($regex), $key) === 1) {
             $part[$key] = $value;
          }
       }
