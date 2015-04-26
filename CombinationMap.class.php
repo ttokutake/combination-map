@@ -70,7 +70,7 @@ class CombinationMap
    public function map($function)
    {
       ensure(is_callable($function), type_violation_message('The first argument', 'callable', $function));
-      $cm        = new CombinationMap($this->delimiter);
+      $cm        = $this->baby();
       $cm->array = array_map($function, $this->array);
       return $cm;
    }
@@ -126,6 +126,13 @@ class CombinationMap
       }
    }
 
+   public function bundle() {
+      $associative = $this->toAssociative();
+      $cm = $this->baby();
+      $cm->fromAssociative($associative);
+      return $cm;
+   }
+
    public function shave(array $partial_combination)
    {
       $regex  = '^' . follow_join($this->quoted_delimiter, $this->escape($partial_combination));
@@ -133,7 +140,7 @@ class CombinationMap
       foreach ($this->array as $key => $value) {
          $shoven[preg_replace($this->wrap($regex), '', $key)] = $value;
       }
-      $cm        = new CombinationMap($this->delimiter);
+      $cm        = $this->baby();
       $cm->array = $shoven;
       return $cm;
    }
@@ -153,6 +160,11 @@ class CombinationMap
       return $this->part('include', $partial_combination);
    }
 
+
+   private function baby()
+   {
+      return new CombinationMap($this->delimiter);
+   }
 
    private function toKey(array $combination)
    {
@@ -193,7 +205,7 @@ class CombinationMap
             $end_with   = "$regex$";
             $just       = "^$regex$";
             $include    = wrap($regex, $this->quoted_delimiter);
-            $regex      = "($start_with|$end_with|$include|$just)";
+            $regex      = "$start_with|$end_with|$include|$just";
             break;
          default:
             throw new LogicException('This line must not be passed!');
@@ -205,7 +217,7 @@ class CombinationMap
             $part[$key] = $value;
          }
       }
-      $cm        = new CombinationMap($this->delimiter);
+      $cm        = $this->baby();
       $cm->array = $part;
       return $cm;
    }

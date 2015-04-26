@@ -178,6 +178,22 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    }
 
    /**
+    * @depends testToAssociative
+    * @depends testFromAssociative
+    * @depends testToArrays
+    * @depends testFromArrays
+    */
+   public function testBundle($cm)
+   {
+      $cm    = clone $cm;
+      $key   = ['blowser', 'safari'];
+      $value = $cm->get($key);
+      $cm->erase($key);
+      $cm->set($key, $value);
+      $this->assertEquals($this->arrays, $cm->bundle()->toArrays());
+   }
+
+   /**
     * @depends testSetAndSize
     */
    public function testShave($cm)
