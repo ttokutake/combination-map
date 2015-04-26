@@ -183,7 +183,7 @@ class CombinationMap
 
       $part = array();
       foreach ($this->array as $key => $value) {
-         if (preg_match("/$regex/", $key) === 1) {
+         if (preg_match("/$regex/u", $key) === 1) {
             $part[$key] = $value;
          }
       }
