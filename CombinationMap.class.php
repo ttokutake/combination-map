@@ -20,6 +20,7 @@ class CombinationMap
 
    public function __construct($delimiter = ',')
    {
+      ensure(is_string($delimiter) && !empty($delimiter), variable_violation_message('The first argument', 'non-empty string', $delimiter));
       $this->delimiter        = $delimiter;
       $this->quoted_delimiter = $this->quote($delimiter);
       $this->array            = array();
