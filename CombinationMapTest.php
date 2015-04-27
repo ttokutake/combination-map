@@ -138,8 +138,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     */
    public function testFromAssociative($cm)
    {
-      $from_associative = new CombinationMap();
-      $from_associative->fromAssociative($this->associative);
+      $from_associative = CombinationMap::fromAssociative($this->associative, ':');
       $this->assertEquals($cm->toAssociative(), $from_associative->toAssociative());
    }
 
@@ -158,8 +157,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     */
    public function testFromArrays($cm)
    {
-      $from_arrays = new CombinationMap('|');
-      $from_arrays->fromArrays(array_map('array_flat', $this->pairs));
+      $from_arrays = CombinationMap::fromArrays(array_map('array_flat', $this->pairs), '|');
       $this->assertEquals($cm->toArrays(), $from_arrays->toArrays());
    }
 

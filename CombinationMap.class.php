@@ -26,6 +26,42 @@ class CombinationMap
       $this->array            = array();
    }
 
+   public static function fromAssociative(array $associative, $delimiter = ',')
+   {
+      $cm = new CombinationMap($delimiter);
+      foreach ($associative as $key => $value) {
+         if (is_array($value)) {
+            $cm->chainFrom($value, array($key));
+         } else {
+            $cm->array[$key] = $value;
+         }
+      }
+      return $cm;
+   }
+   private function chainFrom(array $associative, array $key_chain)
+   {
+      foreach ($associative as $key => $value) {
+         $keys = array_shoe($key_chain, $key);
+         if (is_array($value)) {
+            $this->chainFrom($value, $keys);
+         } else {
+            $this->set($keys, $value);
+         }
+      }
+   }
+
+   public static function fromArrays(array $arrays, $delimiter = ',')
+   {
+      $cm = new CombinationMap($delimiter);
+      foreach ($arrays as $array) {
+         ensure(is_array($array), type_violation_message('Each element', 'array', $array));
+         list($combination, $value) = array_depeditate($array);
+         $cm->set($combination, $value);
+      }
+      return $cm;
+   }
+
+
    public function size()
    {
       return count($this->array);
@@ -71,60 +107,13 @@ class CombinationMap
    public function map($function)
    {
       ensure(is_callable($function), type_violation_message('The first argument', 'callable', $function));
-      $cm        = $this->baby();
-      $cm->array = array_map($function, $this->array);
-      return $cm;
+      return $this->baby(array_map($function, $this->array));
    }
 
    public function reduce($function, $initialize = null)
    {
       ensure(is_callable($function), type_violation_message('The first argument', 'callable', $function));
       return array_reduce($this->array, $function, $initialize);
-   }
-
-   public function toAssociative()
-   {
-      $associative = array();
-      foreach ($this->array as $key => $value)
-      {
-         $combination = explode($this->delimiter, $key);
-
-         $pointer = &$associative;
-         foreach ($combination as $group) {
-            $pointer = &$pointer[$group];
-         }
-         $pointer = $value;
-      }
-      return $associative;
-   }
-
-   public function fromAssociative(array $associative)
-   {
-      foreach ($associative as $key => $value) {
-         if (is_array($value)) {
-            $this->chainFrom($value, $key);
-         } else {
-            $this->array[$key] = $value;
-         }
-      }
-   }
-
-   public function toArrays()
-   {
-      $arrays = array();
-      foreach ($this->array as $keys => $value) {
-         $arrays[] = array_shoe(explode($this->delimiter, $keys), $value);
-      }
-      return $arrays;
-   }
-
-   public function fromArrays(array $arrays)
-   {
-      foreach ($arrays as $array) {
-         ensure(is_array($array), type_violation_message('Each element', 'array', $array));
-         list($combination, $value) = array_depeditate($array);
-         $this->array[$this->toKey($combination)] = $value;
-      }
    }
 
    public function shave(array $partial_combination)
@@ -134,9 +123,7 @@ class CombinationMap
       foreach ($this->array as $key => $value) {
          $shoven[preg_replace($this->wrap($regex), '', $key)] = $value;
       }
-      $cm        = $this->baby();
-      $cm->array = $shoven;
-      return $cm;
+      return $this->baby($shoven);
    }
 
    public function startWith(array $partial_combination)
@@ -155,25 +142,47 @@ class CombinationMap
    }
 
 
-   private function baby()
+   public function toAssociative()
    {
-      return new CombinationMap($this->delimiter);
+      $associative = array();
+      foreach ($this->array as $key => $value)
+      {
+         $combination = explode($this->delimiter, $key);
+
+         $pointer = &$associative;
+         foreach ($combination as $group) {
+            $pointer = &$pointer[$group];
+         }
+         $pointer = $value;
+      }
+      return $associative;
+   }
+
+   public function toArrays()
+   {
+      $arrays = array();
+      foreach ($this->array as $keys => $value) {
+         $arrays[] = array_shoe(explode($this->delimiter, $keys), $value);
+      }
+      return $arrays;
+   }
+
+   public function merge(CombinationMap $cm)
+   {
+      // under construction
+   }
+
+
+   private function baby(array $array)
+   {
+      $cm        = new CombinationMap($this->delimiter);
+      $cm->array = $array;
+      return $cm;
    }
 
    private function toKey(array $combination)
    {
       return implode($this->delimiter, $combination);
-   }
-
-   private function chainFrom(array $associative, $key_chain)
-   {
-      foreach ($associative as $key => $value) {
-         if (is_array($value)) {
-            $this->chainFrom($value, $this->toKey(array($key_chain, $key)));
-         } else {
-            $this->array[$this->toKey(array($key_chain, $key))] = $value;
-         }
-      }
    }
 
    private function quote($str)
@@ -211,9 +220,7 @@ class CombinationMap
             $part[$key] = $value;
          }
       }
-      $cm        = $this->baby();
-      $cm->array = $part;
-      return $cm;
+      return $this->baby($part);
    }
 
    private function escape(array $combination)
