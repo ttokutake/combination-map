@@ -262,4 +262,29 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
       $expected    = array_map(function ($array) { return array_drop($array, 1); }, $filtered_cm->toArrays());
       $this->assertEquals($expected, $filtered_cm->shave($partial_key)->toArrays());
    }
+
+   /**
+    * @depends testSetAndSize
+    * @depends testEndWith
+    * @depends testToArrays
+    */
+   public function testBundle($cm)
+   {
+      $versions   = $cm->endWith(['version'  ])->toArrays();
+      $valuations = $cm->endWith(['valuation'])->toArrays();
+      $merged     = CombinationMap::fromArrays(array_merge($versions, $valuations));
+      $this->assertEquals($cm->toArrays(), $merged->bundle()->toArrays());
+   }
+
+   /**
+    * @depends testSetAndSize
+    * @depends testEndWith
+    * @depends testToArrays
+    */
+   public function testMerge($cm)
+   {
+      $versions   = $cm->endWith(['version'  ]);
+      $valuations = $cm->endWith(['valuation']);
+      $this->assertEquals($cm->toArrays(), $versions->merge($valuations)->toArrays());
+   }
 }

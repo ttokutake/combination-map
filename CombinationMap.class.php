@@ -167,9 +167,14 @@ class CombinationMap
       return $arrays;
    }
 
+   public function bundle()
+   {
+      return self::fromAssociative($this->toAssociative(), $this->delimiter);
+   }
+
    public function merge(CombinationMap $cm)
    {
-      // under construction
+      return self::fromAssociative(array_merge_recursive($this->toAssociative(), $cm->toAssociative()));
    }
 
 
