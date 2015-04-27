@@ -26,7 +26,6 @@ $assoc = [
       'lolipop'  =>  30,
    ],
 ];
-$cm = new CombinationMap(',');
-$cm->fromAssociative($assoc);
+$cm = CombinationMap::fromAssociative($assoc);
 $cm->dump();
 ```
