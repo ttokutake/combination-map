@@ -5,52 +5,73 @@ require_once implode(DIRECTORY_SEPARATOR, [__DIR__, 'CombinationMap.class.php'])
 
 class CombinationMapTest extends PHPUnit_Framework_TestCase
 {
-   private $combinations = [
-      ['blowser', 'firefox'],
-      ['blowser', 'chrome' ],
-      ['blowser', 'safari' ],
-      ['os', 'windows'          ],
-      ['os', 'osx'              ],
-      ['os', 'linux'  , 'ubuntu'],
-      ['os', 'linux'  , 'centos'],
-      ['os', 'linux'  , 'gentoo'],
+   private $pairs = [
+      [['os', 'windows', 'version'  ], '8.1'  ],
+      [['os', 'windows', 'valuation'], 7      ],
+      [['os', 'osx'    , 'version'  ], '10.10'],
+      [['os', 'osx'    , 'valuation'], 6      ],
+      [['os', 'linux'  , 'ubuntu', 'version'  ], '15.04'],
+      [['os', 'linux'  , 'ubuntu', 'valuation'], 8      ],
+      [['os', 'linux'  , 'centos', 'version'  ], '7'    ],
+      [['os', 'linux'  , 'centos', 'valuation'], 7      ],
+      [['os', 'linux'  , 'gentoo', 'version'  ], '12.01'],
+      [['os', 'linux'  , 'gentoo', 'valuation'], 5      ],
+      [['blowser', 'ie'    , 'version'  ], '11' ],
+      [['blowser', 'ie'    , 'valuation'], 9    ],
+      [['blowser', 'safari', 'version'  ], '8'  ],
+      [['blowser', 'safari', 'valuation'], 6    ],
+      [['blowser', 'chrome', 'version'  ], 'v41'],
+      [['blowser', 'chrome', 'valuation'], 8    ],
    ];
-   private $elements     = [10, 20, 30, 100, 200, 310, 320, 330];
-   private $associative  = [
-      'blowser' => [
-         'firefox' => 10,
-         'chrome'  => 20,
-         'safari'  => 30,
-      ],
+   private $associative = [
       'os' => [
-         'windows' => 100,
-         'osx'     => 200,
-         'linux'   => [
-            'ubuntu' => 310,
-            'centos' => 320,
-            'gentoo' => 330,
+         'windows' => [
+            'version'   => '8.1',
+            'valuation' => 7    ,
          ],
-      ]
-   ];
-   private $arrays = [
-      ['blowser', 'firefox', 10],
-      ['blowser', 'chrome' , 20],
-      ['blowser', 'safari' , 30],
-      ['os', 'windows', 100],
-      ['os', 'osx'    , 200],
-      ['os', 'linux'  , 'ubuntu', 310],
-      ['os', 'linux'  , 'centos', 320],
-      ['os', 'linux'  , 'gentoo', 330],
+         'osx' => [
+            'version'   => '10.10',
+            'valuation' => 6      ,
+         ],
+         'linux' => [
+            'ubuntu' => [
+               'version'   => '15.04',
+               'valuation' => 8      ,
+            ],
+            'centos' => [
+               'version'   => '7',
+               'valuation' => 7  ,
+            ],
+            'gentoo' => [
+               'version'   => '12.01',
+               'valuation' => 5      ,
+            ],
+         ],
+      ],
+      'blowser' => [
+         'ie' => [
+            'version'   => '11',
+            'valuation' => 9 ,
+         ],
+         'safari' => [
+            'version'   => '8',
+            'valuation' => 6 ,
+         ],
+         'chrome' => [
+            'version'   => 'v41',
+            'valuation' => 8 ,
+         ],
+      ],
    ];
 
 
    public function testSetAndSize()
    {
       $cm = new CombinationMap('/');
-      foreach (array_zip($this->combinations, $this->elements) as $index => list($combination, $element)) {
-         $cm->set($combination, $element);
-         $this->assertEquals($index + 1, $cm->size());
+      foreach ($this->pairs as list($key, $value)) {
+         $cm->set($key, $value);
       }
+      $this->assertEquals(count($this->pairs), $cm->size());
       return $cm;
    }
 
@@ -59,11 +80,22 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     */
    public function testGet($cm)
    {
-      foreach (incremental_range(0, count($this->elements) - 1) as $index) {
-         $this->assertEquals($this->elements[$index], $cm->get($this->combinations[$index]));
+      foreach ($this->pairs as list($key, $value)) {
+         $this->assertEquals($value, $cm->get($key));
       }
-      $this->assertNull($cm->get([]));
-      return $cm;
+   }
+
+   /**
+    * @depends testSetAndSize
+    * @depends testGet
+    */
+   public function testApply($cm) {
+      $cm = clone $cm;
+
+      foreach ($this->pairs as list($key, $value)) {
+         $cm->apply($key, 'withln');
+         $this->assertEquals(withln($value), $cm->get($key));
+      }
    }
 
    /**
@@ -71,74 +103,26 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     */
    public function testExist($cm)
    {
-      foreach ($this->combinations as $combination) {
-         $this->assertTrue($cm->exist($combination));
+      foreach ($this->pairs as list($key, $value)) {
+         $this->assertTrue($cm->exist($key));
       }
-      $this->assertFalse($cm->exist(['blowser', 'opera']));
-   }
-
-   /**
-    * @depends testGet
-    */
-   public function testApply($cm)
-   {
-      $cm = clone $cm;
-      $twice = function ($int) { return 2 * $int; };
-      foreach (incremental_range(0, count($this->elements) - 1) as $index) {
-         $cm->apply($this->combinations[$index], $twice);
-         $this->assertEquals($twice($this->elements[$index]), $cm->get($this->combinations[$index]));
-      }
+      $this->assertFalse($cm->exist(['os', 'firefox']));
    }
 
    /**
     * @depends testSetAndSize
+    * @depends testExist
     */
    public function testErase($cm)
    {
       $cm = clone $cm;
-      foreach (decremental_range(count($this->elements) - 1, 0) as $index) {
-         $cm->erase($this->combinations[$index]);
-         $array_size = $index;
-         $this->assertEquals($array_size, $cm->size());
+      foreach ($this->pairs as list($key)) {
+         $cm->erase($key);
+         $this->assertFalse($cm->exist($key));
       }
+      $this->assertEquals(0, $cm->size());
    }
 
-   /**
-    * @depends testSetAndSize
-    */
-   public function testValues($cm)
-   {
-      $this->assertEquals($this->elements, $cm->values());
-   }
-
-   /**
-    * @depends testSetAndSize
-    */
-   public function testSum($cm)
-   {
-      $this->assertEquals(array_sum($this->elements), $cm->sum());
-   }
-
-   /**
-    * @depends testGet
-    */
-   public function testMap($cm)
-   {
-      $triple = function ($int) { return 3 * $int; };
-      $mapped = $cm->map($triple);
-      foreach (array_zip($this->combinations, $this->elements) as list($combination, $element)) {
-         $this->assertEquals($triple($element), $mapped->get($combination));
-      }
-   }
-
-   /**
-    * @depends testSetAndSize
-    */
-   public function testReduce($cm)
-   {
-      $connect = function ($result, $elem) { return strval($result) . ' + ' . strval($elem); };
-      $this->assertEquals(array_reduce($this->elements, $connect), $cm->reduce($connect));
-   }
 
    /**
     * @depends testSetAndSize
@@ -146,99 +130,138 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    public function testToAssociative($cm)
    {
       $this->assertEquals($this->associative, $cm->toAssociative());
-      return $cm;
    }
 
    /**
+    * @depends testSetAndSize
     * @depends testToAssociative
     */
-   public function testFromAssociative($ok)
+   public function testFromAssociative($cm)
    {
-      $cm = new CombinationMap();
-      $cm->fromAssociative($this->associative);
-      $this->assertEquals($this->associative, $cm->toAssociative());
-   }
-
-   /**
-    * @depends testToAssociative
-    */
-   public function testToArrays($cm)
-   {
-      $this->assertEquals($this->arrays, $cm->toArrays());
-   }
-
-   /**
-    * @depends testToAssociative
-    */
-   public function testFromArrays($ok)
-   {
-      $cm = new CombinationMap();
-      $cm->fromArrays($this->arrays);
-      $this->assertEquals($this->arrays, $cm->toArrays());
-   }
-
-   /**
-    * @depends testToAssociative
-    * @depends testFromAssociative
-    * @depends testToArrays
-    * @depends testFromArrays
-    */
-   public function testBundle($cm)
-   {
-      $cm    = clone $cm;
-      $key   = ['blowser', 'safari'];
-      $value = $cm->get($key);
-      $cm->erase($key);
-      $cm->set($key, $value);
-      $this->assertEquals($this->arrays, $cm->bundle()->toArrays());
+      $from_associative = new CombinationMap();
+      $from_associative->fromAssociative($this->associative);
+      $this->assertEquals($cm->toAssociative(), $from_associative->toAssociative());
    }
 
    /**
     * @depends testSetAndSize
     */
-   public function testShave($cm)
+   public function testToArrays($cm)
    {
-      $shoven = $cm->shave(['os', 'linux']);
-      $copy   = $this->associative;
-      unset($copy['os']['linux']);
-      $expected = array_merge($copy, $this->associative['os']['linux']);
-      $this->assertEquals($expected, $shoven->toAssociative());
+      $expected = array_map('array_flat', $this->pairs);
+      $this->assertEquals($expected, $cm->toArrays());
    }
 
    /**
-    * @depends testToAssociative
+    * @depends testSetAndSize
+    * @depends testToArrays
     */
-   public function testBeginWith($cm)
+   public function testFromArrays($cm)
    {
-      $this->assertEquals(['blowser' => $this->associative['blowser']], $cm->startWith(['blowser'])->toAssociative());
-      $this->assertEquals(['os' => ['linux' => $this->associative['os']['linux']]], $cm->startWith(['os', 'linux'])->toAssociative());
-      $expected = ['os' => ['linux' => ['ubuntu' => $this->associative['os']['linux']['ubuntu']]]];
-      $this->assertEquals($expected, $cm->startWith(['os', '*', 'ubuntu'])->toAssociative());
+      $from_arrays = new CombinationMap('|');
+      $from_arrays->fromArrays(array_map('array_flat', $this->pairs));
+      $this->assertEquals($cm->toArrays(), $from_arrays->toArrays());
    }
 
    /**
-    * @depends testToAssociative
+    * @depends testSetAndSize
+    * @depends testToArrays
+    */
+   public function testStartWith($cm)
+   {
+      $partial_key = ['os', 'windows'];
+      $filtered    = array_filter($this->pairs, function ($pair) use($partial_key) {
+            return array_take($pair[0], 2) == $partial_key;
+         });
+      $expected    = array_map('array_flat', array_values($filtered));
+      $this->assertEquals($expected, $cm->startWith($partial_key)->toArrays());
+   }
+
+   /**
+    * @depends testSetAndSize
+    * @depends testToArrays
     */
    public function testEndWith($cm)
    {
-      $expected = ['os' => ['linux' => ['ubuntu' => $this->associative['os']['linux']['ubuntu']]]];
-      $this->assertEquals($expected, $cm->endWith(['ubuntu'])->toAssociative());
+      $partial_key = ['valuation'];
+      $filtered    = array_filter($this->pairs, function ($pair) use($partial_key) {
+            return array_take_right($pair[0], 1) == $partial_key;
+         });
+      $expected    = array_map('array_flat', array_values($filtered));
+      $this->assertEquals($expected, $cm->endWith($partial_key)->toArrays());
    }
 
-   /**
-    * @depends testToAssociative
+  /**
+    * @depends testSetAndSize
+    * @depends testToArrays
     */
    public function testHave($cm)
    {
-      $expected = [
-         'os' => [
-            'linux'   => [
-               'ubuntu' => 310,
-               'centos' => 320,
-               'gentoo' => 330,
-            ],
-         ]
-      ];
-      $this->assertEquals($expected, $cm->have(['linux'])->toAssociative());
+      $partial_key = ['linux', 'ubuntu'];
+      $filtered    = array_filter($this->pairs, function ($pair) use($partial_key) {
+            return array_for_all($partial_key, function ($word) use($pair) { return in_array($word, $pair[0]); });
+         });
+      $expected    = array_map('array_flat', array_values($filtered));
+      $this->assertEquals($expected, $cm->have($partial_key)->toArrays());
+   }
+
+
+   /**
+    * @depends testSetAndSize
+    */
+   public function testValues($cm)
+   {
+      $this->assertEquals(aoa_values($this->pairs, 1), $cm->values());
+   }
+
+   /**
+    * @depends testSetAndSize
+    * @depends testEndWith
+    * @depends testValues
+    */
+   public function testSum($cm)
+   {
+      $partial_key = ['valuation'];
+      $filtered_cm = $cm->endWith($partial_key);
+      $this->assertEquals(array_sum($filtered_cm->values()), $filtered_cm->sum());
+   }
+
+   /**
+    * @depends testSetAndSize
+    * @depends testEndWith
+    * @depends testValues
+    */
+   public function testMap($cm)
+   {
+      $partial_key = ['valuation'];
+      $closure     = function ($int) { return $int / 2; };
+      $filtered_cm = $cm->endWith($partial_key);
+      $this->assertEquals(array_map($closure, $filtered_cm->values()), $filtered_cm->map($closure)->values());
+   }
+
+   /**
+    * @depends testSetAndSize
+    * @depends testEndWith
+    * @depends testSum
+    */
+   public function testReduce($cm)
+   {
+      $partial_key = ['valuation'];
+      $closure     = function ($sum, $int) { return $sum + $int; };
+      $filtered_cm = $cm->endWith($partial_key);
+      $this->assertEquals($filtered_cm->sum(), $filtered_cm->reduce($closure, 0));
+   }
+
+   /**
+    * @depends testSetAndSize
+    * @depends testStartWith
+    * @depends testToArrays
+    */
+   public function testShave($cm)
+   {
+      $partial_key = ['os'];
+      $filtered_cm = $cm->startWith($partial_key);
+      $expected    = array_map(function ($array) { return array_drop($array, 1); }, $filtered_cm->toArrays());
+      $this->assertEquals($expected, $filtered_cm->shave($partial_key)->toArrays());
    }
 }

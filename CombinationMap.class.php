@@ -126,13 +126,6 @@ class CombinationMap
       }
    }
 
-   public function bundle() {
-      $associative = $this->toAssociative();
-      $cm = $this->baby();
-      $cm->fromAssociative($associative);
-      return $cm;
-   }
-
    public function shave(array $partial_combination)
    {
       $regex  = '^' . follow_join($this->quoted_delimiter, $this->escape($partial_combination));
@@ -230,6 +223,6 @@ class CombinationMap
 
    public function dump()
    {
-      print_r($this->array);
+      echo pretty($this->array);
    }
 }
