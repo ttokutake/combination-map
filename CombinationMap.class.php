@@ -201,8 +201,8 @@ class CombinationMap
             $regex = "$regex$";
             break;
          case 'include':
-            $start_with = "^$regex";
-            $end_with   = "$regex$";
+            $start_with = "^$regex{$this->quoted_delimiter}";
+            $end_with   = "{$this->quoted_delimiter}$regex$";
             $just       = "^$regex$";
             $include    = wrap($regex, $this->quoted_delimiter);
             $regex      = "$start_with|$end_with|$include|$just";
