@@ -20,7 +20,8 @@ class CombinationMap
 
    public function __construct($delimiter = ',')
    {
-      ensure(is_string($delimiter) && !empty($delimiter), variable_violation_message('The first argument', 'non-empty string', $delimiter));
+      ensure_string   ($delimiter, 'The first argument');
+      ensure_non_empty($delimiter, 'The first argument');
       $this->delimiter        = $delimiter;
       $this->quoted_delimiter = $this->quote($delimiter);
       $this->array            = array();
@@ -54,7 +55,7 @@ class CombinationMap
    {
       $cm = new CombinationMap($delimiter);
       foreach ($arrays as $array) {
-         ensure(is_array($array), type_violation_message('Each element', 'array', $array));
+         ensure_array($array, 'Each element');
          list($combination, $value) = array_depeditate($array);
          $cm->set($combination, $value);
       }
@@ -84,7 +85,7 @@ class CombinationMap
 
    public function apply(array $combination, $function)
    {
-      ensure(is_callable($function), type_violation_message('The second argument', 'callable', $function));
+      ensure_callable($function, 'The second argument');
       $key = $this->toKey($combination);
       $this->array[$key] = $function(array_get($this->array, $key));
    }
@@ -106,13 +107,13 @@ class CombinationMap
 
    public function map($function)
    {
-      ensure(is_callable($function), type_violation_message('The first argument', 'callable', $function));
+      ensure_callable($function, 'The first argument');
       return $this->baby(array_map($function, $this->array));
    }
 
    public function reduce($function, $initialize = null)
    {
-      ensure(is_callable($function), type_violation_message('The first argument', 'callable', $function));
+      ensure_callable($function, 'The first argument');
       return array_reduce($this->array, $function, $initialize);
    }
 
