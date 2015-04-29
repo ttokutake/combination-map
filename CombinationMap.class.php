@@ -83,11 +83,11 @@ class CombinationMap
       return array_key_exists($this->toKey($combination), $this->array);
    }
 
-   public function apply(array $combination, $function)
+   public function apply(array $combination, $closure)
    {
-      ensure_callable($function, 'The second argument');
+      ensure_callable($closure, 'The second argument');
       $key = $this->toKey($combination);
-      $this->array[$key] = $function(array_get($this->array, $key));
+      $this->array[$key] = $closure(array_get($this->array, $key));
    }
 
    public function erase(array $combination)
@@ -105,16 +105,16 @@ class CombinationMap
       return array_sum($this->array);
    }
 
-   public function map($function)
+   public function map($closure)
    {
-      ensure_callable($function, 'The first argument');
-      return $this->baby(array_map($function, $this->array));
+      ensure_callable($closure, 'The first argument');
+      return $this->baby(array_map($closure, $this->array));
    }
 
-   public function reduce($function, $initialize = null)
+   public function reduce($closure, $initialize = null)
    {
-      ensure_callable($function, 'The first argument');
-      return array_reduce($this->array, $function, $initialize);
+      ensure_callable($closure, 'The first argument');
+      return array_reduce($this->array, $closure, $initialize);
    }
 
    public function shave(array $partial_combination)
