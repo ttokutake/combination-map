@@ -145,25 +145,16 @@ class CombinationMap
 
    public function toAssociative()
    {
-      $associative = array();
-      foreach ($this->array as $key => $value)
-      {
-         $combination = explode($this->delimiter, $key);
-
-         $pointer = &$associative;
-         foreach ($combination as $group) {
-            $pointer = &$pointer[$group];
-         }
-         $pointer = $value;
-      }
-      return $associative;
+      return array_reduce_with_key($this->array, function ($carry, $key, $value) {
+            return array_merge_recursive($carry, aoa_set(array(), $this->toCombination($key), $value));
+         }, array());
    }
 
    public function toArrays()
    {
       $arrays = array();
       foreach ($this->array as $keys => $value) {
-         $arrays[] = array_shoe(explode($this->delimiter, $keys), $value);
+         $arrays[] = array_shoe($this->toCombination($keys), $value);
       }
       return $arrays;
    }
@@ -189,6 +180,12 @@ class CombinationMap
    private function toKey(array $combination)
    {
       return implode($this->delimiter, $combination);
+   }
+
+   private function toCombination($key)
+   {
+      ensure_string($key, 'The first argument');
+      return explode($this->delimiter, $key);
    }
 
    private function quote($str)
