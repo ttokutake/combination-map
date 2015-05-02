@@ -145,7 +145,7 @@ class CombinationMap
 
    public function toAssociative()
    {
-      return array_reduce_with_key($this->array, function ($carry, $key, $value) {
+      return array_reduce_with_key($this->array, function($carry, $key, $value) {
             return array_merge_recursive($carry, aoa_set(array(), $this->toCombination($key), $value));
          }, array());
    }
@@ -228,7 +228,7 @@ class CombinationMap
 
    private function escape(array $combination)
    {
-      return array_map(function ($key) { return $key === '*' ? "[^$this->quoted_delimiter]*" : $this->quote($key); }, $combination);
+      return array_map(function($key) { return $key === '*' ? "[^$this->quoted_delimiter]*" : $this->quote($key); }, $combination);
    }
 
 

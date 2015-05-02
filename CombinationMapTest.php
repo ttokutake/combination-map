@@ -168,7 +168,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    public function testStartWith($cm)
    {
       $partial_key = ['os', 'windows'];
-      $filtered    = array_filter($this->pairs, function ($pair) use($partial_key) {
+      $filtered    = array_filter($this->pairs, function($pair) use($partial_key) {
             return array_take($pair[0], 2) == $partial_key;
          });
       $expected    = array_map('array_flat', to_seq($filtered));
@@ -182,7 +182,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    public function testEndWith($cm)
    {
       $partial_key = ['valuation'];
-      $filtered    = array_filter($this->pairs, function ($pair) use($partial_key) {
+      $filtered    = array_filter($this->pairs, function($pair) use($partial_key) {
             return array_take_right($pair[0], 1) == $partial_key;
          });
       $expected    = array_map('array_flat', to_seq($filtered));
@@ -196,8 +196,8 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    public function testHave($cm)
    {
       $partial_key = ['linux', 'ubuntu'];
-      $filtered    = array_filter($this->pairs, function ($pair) use($partial_key) {
-            return array_for_all($partial_key, function ($word) use($pair) { return in_array($word, $pair[0]); });
+      $filtered    = array_filter($this->pairs, function($pair) use($partial_key) {
+            return array_for_all($partial_key, function($word) use($pair) { return in_array($word, $pair[0]); });
          });
       $expected    = array_map('array_flat', to_seq($filtered));
       $this->assertEquals($expected, $cm->have($partial_key)->toArrays());
@@ -232,7 +232,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    public function testMap($cm)
    {
       $partial_key = ['valuation'];
-      $closure     = function ($int) { return $int / 2; };
+      $closure     = function($int) { return $int / 2; };
       $filtered_cm = $cm->endWith($partial_key);
       $this->assertEquals(array_map($closure, $filtered_cm->values()), $filtered_cm->map($closure)->values());
    }
@@ -245,7 +245,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    public function testReduce($cm)
    {
       $partial_key = ['valuation'];
-      $closure     = function ($sum, $int) { return $sum + $int; };
+      $closure     = function($sum, $int) { return $sum + $int; };
       $filtered_cm = $cm->endWith($partial_key);
       $this->assertEquals($filtered_cm->sum(), $filtered_cm->reduce($closure, 0));
    }
@@ -259,7 +259,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    {
       $partial_key = ['os'];
       $filtered_cm = $cm->startWith($partial_key);
-      $expected    = array_map(function ($array) { return array_drop($array, 1); }, $filtered_cm->toArrays());
+      $expected    = array_map(function($array) { return array_drop($array, 1); }, $filtered_cm->toArrays());
       $this->assertEquals($expected, $filtered_cm->shave($partial_key)->toArrays());
    }
 
