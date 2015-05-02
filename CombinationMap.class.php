@@ -22,6 +22,7 @@ class CombinationMap
    {
       ensure_string   ($delimiter, 'The first argument');
       ensure_non_empty($delimiter, 'The first argument');
+
       $this->delimiter        = $delimiter;
       $this->quoted_delimiter = $this->quote($delimiter);
       $this->array            = array();
@@ -86,6 +87,7 @@ class CombinationMap
    public function apply(array $combination, $closure)
    {
       ensure_callable($closure, 'The second argument');
+
       $key = $this->toKey($combination);
       $this->array[$key] = $closure(array_get($this->array, $key));
    }
@@ -108,12 +110,14 @@ class CombinationMap
    public function map($closure)
    {
       ensure_callable($closure, 'The first argument');
+
       return $this->baby(array_map($closure, $this->array));
    }
 
    public function reduce($closure, $initialize = null)
    {
       ensure_callable($closure, 'The first argument');
+
       return array_reduce($this->array, $closure, $initialize);
    }
 
@@ -185,6 +189,7 @@ class CombinationMap
    private function toCombination($key)
    {
       ensure_string($key, 'The first argument');
+
       return explode($this->delimiter, $key);
    }
 
