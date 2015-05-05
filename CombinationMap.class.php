@@ -114,11 +114,18 @@ class CombinationMap
       return $this->baby(array_map($closure, $this->array));
    }
 
-   public function reduce($closure, $initialize = null)
+   public function reduce($closure, $initialize)
    {
       ensure_callable($closure, 'The first argument');
 
       return array_reduce($this->array, $closure, $initialize);
+   }
+
+   public function filter($closure)
+   {
+      ensure_callable($closure, 'The first argument');
+
+      return $this->baby(array_filter($this->array, $closure));
    }
 
    public function shave(array $partial_combination)

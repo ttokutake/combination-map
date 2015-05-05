@@ -252,6 +252,16 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testSetAndSize
+    * @depends testEndWith
+    */
+   public function testFilter($cm)
+   {
+      $partial_key = ['version'];
+      $this->assertEquals($cm->endWith($partial_key), $cm->filter(function($value) { return is_string($value); }));
+   }
+
+   /**
+    * @depends testSetAndSize
     * @depends testStartWith
     * @depends testToArrays
     */
