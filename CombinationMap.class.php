@@ -18,7 +18,7 @@ class CombinationMap
    private $quoted_delimiter;
    private $array;
 
-   public function __construct($delimiter = ',')
+   function __construct($delimiter = ',')
    {
       ensure_string   ($delimiter, 'The first argument');
       ensure_non_empty($delimiter, 'The first argument');
@@ -28,7 +28,7 @@ class CombinationMap
       $this->array            = array();
    }
 
-   public static function fromAssociative(array $associative, $delimiter = ',')
+   static function fromAssociative(array $associative, $delimiter = ',')
    {
       $cm = new CombinationMap($delimiter);
       foreach ($associative as $key => $value) {
@@ -52,7 +52,7 @@ class CombinationMap
       }
    }
 
-   public static function fromArrays(array $arrays, $delimiter = ',')
+   static function fromArrays(array $arrays, $delimiter = ',')
    {
       $cm = new CombinationMap($delimiter);
       foreach ($arrays as $array) {
@@ -64,27 +64,27 @@ class CombinationMap
    }
 
 
-   public function size()
+   function size()
    {
       return count($this->array);
    }
 
-   public function set(array $combination, $value)
+   function set(array $combination, $value)
    {
       $this->array[$this->toKey($combination)] = $value;
    }
 
-   public function get(array $combination)
+   function get(array $combination)
    {
       return array_get($this->array, $this->toKey($combination));
    }
 
-   public function exist(array $combination)
+   function exist(array $combination)
    {
       return array_key_exists($this->toKey($combination), $this->array);
    }
 
-   public function apply(array $combination, $closure)
+   function apply(array $combination, $closure)
    {
       ensure_callable($closure, 'The second argument');
 
@@ -92,43 +92,43 @@ class CombinationMap
       $this->array[$key] = $closure(array_get($this->array, $key));
    }
 
-   public function erase(array $combination)
+   function erase(array $combination)
    {
       unset($this->array[$this->toKey($combination)]);
    }
 
-   public function values()
+   function values()
    {
       return array_values($this->array);
    }
 
-   public function sum()
+   function sum()
    {
       return array_sum($this->array);
    }
 
-   public function map($closure)
+   function map($closure)
    {
       ensure_callable($closure, 'The first argument');
 
       return $this->baby(array_map($closure, $this->array));
    }
 
-   public function reduce($closure, $initialize)
+   function reduce($closure, $initialize)
    {
       ensure_callable($closure, 'The first argument');
 
       return array_reduce($this->array, $closure, $initialize);
    }
 
-   public function filter($closure)
+   function filter($closure)
    {
       ensure_callable($closure, 'The first argument');
 
       return $this->baby(array_filter($this->array, $closure));
    }
 
-   public function shave(array $partial_combination)
+   function shave(array $partial_combination)
    {
       $regex  = '^' . follow_join($this->quoted_delimiter, $this->escape($partial_combination));
       $shoven = array();
@@ -138,30 +138,30 @@ class CombinationMap
       return $this->baby($shoven);
    }
 
-   public function startWith(array $partial_combination)
+   function startWith(array $partial_combination)
    {
       return $this->part('left', $partial_combination);
    }
 
-   public function endWith(array $partial_combination)
+   function endWith(array $partial_combination)
    {
       return $this->part('right', $partial_combination);
    }
 
-   public function have(array $partial_combination)
+   function have(array $partial_combination)
    {
       return $this->part('include', $partial_combination);
    }
 
 
-   public function toAssociative()
+   function toAssociative()
    {
       return array_reduce_with_key($this->array, function($carry, $key, $value) {
             return array_merge_recursive($carry, aoa_set(array(), $this->toCombination($key), $value));
          }, array());
    }
 
-   public function toArrays()
+   function toArrays()
    {
       $arrays = array();
       foreach ($this->array as $keys => $value) {
@@ -170,12 +170,12 @@ class CombinationMap
       return $arrays;
    }
 
-   public function bundle()
+   function bundle()
    {
       return self::fromAssociative($this->toAssociative(), $this->delimiter);
    }
 
-   public function merge(CombinationMap $cm)
+   function merge(CombinationMap $cm)
    {
       return self::fromAssociative(array_merge_recursive($this->toAssociative(), $cm->toAssociative()));
    }
@@ -244,7 +244,7 @@ class CombinationMap
    }
 
 
-   public function dump()
+   function dump()
    {
       echo pretty($this->array);
    }

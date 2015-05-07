@@ -65,7 +65,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    ];
 
 
-   public function testSetAndSize()
+   function testSetAndSize()
    {
       $cm = new CombinationMap('/');
       foreach ($this->pairs as list($key, $value)) {
@@ -78,7 +78,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    /**
     * @depends testSetAndSize
     */
-   public function testGet($cm)
+   function testGet($cm)
    {
       foreach ($this->pairs as list($key, $value)) {
          $this->assertEquals($value, $cm->get($key));
@@ -89,7 +89,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testSetAndSize
     * @depends testGet
     */
-   public function testApply($cm) {
+   function testApply($cm) {
       $cm = clone $cm;
 
       foreach ($this->pairs as list($key, $value)) {
@@ -101,7 +101,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    /**
     * @depends testSetAndSize
     */
-   public function testExist($cm)
+   function testExist($cm)
    {
       foreach ($this->pairs as list($key, $value)) {
          $this->assertTrue($cm->exist($key));
@@ -113,7 +113,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testSetAndSize
     * @depends testExist
     */
-   public function testErase($cm)
+   function testErase($cm)
    {
       $cm = clone $cm;
       foreach ($this->pairs as list($key)) {
@@ -127,7 +127,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    /**
     * @depends testSetAndSize
     */
-   public function testToAssociative($cm)
+   function testToAssociative($cm)
    {
       $this->assertEquals($this->associative, $cm->toAssociative());
    }
@@ -136,7 +136,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testSetAndSize
     * @depends testToAssociative
     */
-   public function testFromAssociative($cm)
+   function testFromAssociative($cm)
    {
       $from_associative = CombinationMap::fromAssociative($this->associative, ':');
       $this->assertEquals($cm->toAssociative(), $from_associative->toAssociative());
@@ -145,7 +145,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    /**
     * @depends testSetAndSize
     */
-   public function testToArrays($cm)
+   function testToArrays($cm)
    {
       $expected = array_map('array_flat', $this->pairs);
       $this->assertEquals($expected, $cm->toArrays());
@@ -155,7 +155,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testSetAndSize
     * @depends testToArrays
     */
-   public function testFromArrays($cm)
+   function testFromArrays($cm)
    {
       $from_arrays = CombinationMap::fromArrays(array_map('array_flat', $this->pairs), '|');
       $this->assertEquals($cm->toArrays(), $from_arrays->toArrays());
@@ -165,7 +165,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testSetAndSize
     * @depends testToArrays
     */
-   public function testStartWith($cm)
+   function testStartWith($cm)
    {
       $partial_key = ['os', 'windows'];
       $filtered    = array_filter($this->pairs, function($pair) use($partial_key) {
@@ -179,7 +179,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testSetAndSize
     * @depends testToArrays
     */
-   public function testEndWith($cm)
+   function testEndWith($cm)
    {
       $partial_key = ['valuation'];
       $filtered    = array_filter($this->pairs, function($pair) use($partial_key) {
@@ -193,7 +193,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testSetAndSize
     * @depends testToArrays
     */
-   public function testHave($cm)
+   function testHave($cm)
    {
       $partial_key = ['linux', 'ubuntu'];
       $filtered    = array_filter($this->pairs, function($pair) use($partial_key) {
@@ -207,7 +207,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    /**
     * @depends testSetAndSize
     */
-   public function testValues($cm)
+   function testValues($cm)
    {
       $this->assertEquals(aoa_values($this->pairs, 1), $cm->values());
    }
@@ -217,7 +217,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testEndWith
     * @depends testValues
     */
-   public function testSum($cm)
+   function testSum($cm)
    {
       $partial_key = ['valuation'];
       $filtered_cm = $cm->endWith($partial_key);
@@ -229,7 +229,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testEndWith
     * @depends testValues
     */
-   public function testMap($cm)
+   function testMap($cm)
    {
       $partial_key = ['valuation'];
       $closure     = function($int) { return $int / 2; };
@@ -242,7 +242,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testEndWith
     * @depends testSum
     */
-   public function testReduce($cm)
+   function testReduce($cm)
    {
       $partial_key = ['valuation'];
       $closure     = function($sum, $int) { return $sum + $int; };
@@ -254,7 +254,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testSetAndSize
     * @depends testEndWith
     */
-   public function testFilter($cm)
+   function testFilter($cm)
    {
       $partial_key = ['version'];
       $this->assertEquals($cm->endWith($partial_key), $cm->filter(function($value) { return is_string($value); }));
@@ -265,7 +265,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testStartWith
     * @depends testToArrays
     */
-   public function testShave($cm)
+   function testShave($cm)
    {
       $partial_key = ['os'];
       $filtered_cm = $cm->startWith($partial_key);
@@ -278,7 +278,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testEndWith
     * @depends testToArrays
     */
-   public function testBundle($cm)
+   function testBundle($cm)
    {
       $versions   = $cm->endWith(['version'  ])->toArrays();
       $valuations = $cm->endWith(['valuation'])->toArrays();
@@ -291,7 +291,7 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
     * @depends testEndWith
     * @depends testToArrays
     */
-   public function testMerge($cm)
+   function testMerge($cm)
    {
       $versions   = $cm->endWith(['version'  ]);
       $valuations = $cm->endWith(['valuation']);
