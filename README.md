@@ -1,4 +1,4 @@
-# CombinationMap ![Build Status](https://travis-ci.org/ttokutake/combination-map.svg?branch=master)
+# CombinationMap [![Build Status](https://travis-ci.org/ttokutake/combination-map.svg?branch=master)](https://travis-ci.org/ttokutake/combination-map) [![Coverage Status](https://coveralls.io/repos/ttokutake/combination-map/badge.png?branch=master)](https://coveralls.io/r/ttokutake/combination-map)
 
 ## Requirements
 

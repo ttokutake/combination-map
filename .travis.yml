@@ -1,9 +1,20 @@
 language: php
+
 php:
   - 5.5
   - 5.6
+
+before_script:
+  - curl -s http://getcomposer.org/installer | php
+  - php composer.phar install --dev --no-interaction
+
 script:
-  - phpunit CombinationMapTest.php
+  - mkdir -p build/logs
+  - phpunit --coverage-clover build/logs/clover.xml CombinationMapTest.php
+
+after_script:
+  - php vendor/bin/coveralls -v -c .coveralls.yml
+
 notifications:
   emails:
     - tadatoshi.tokutake@gmail.com
