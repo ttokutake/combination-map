@@ -231,7 +231,7 @@ class CombinationMap
 
       $part = array();
       foreach ($this->array as $key => $value) {
-         if (preg_match($this->wrap($regex), $key) === 1) {
+         if (preg_match($this->wrap($regex), $key)) {
             $part[$key] = $value;
          }
       }
