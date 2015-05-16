@@ -168,10 +168,10 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    function testStartWith($cm)
    {
       $partial_key = ['os', 'windows'];
-      $filtered    = array_filter($this->pairs, function($pair) use($partial_key) {
+      $filtered    = seq_filter($this->pairs, function($pair) use($partial_key) {
             return array_take($pair[0], 2) == $partial_key;
          });
-      $expected    = array_map('array_flat', to_seq($filtered));
+      $expected    = array_map('array_flat', $filtered);
       $this->assertEquals($expected, $cm->startWith($partial_key)->toArrays());
    }
 
@@ -182,10 +182,10 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    function testEndWith($cm)
    {
       $partial_key = ['valuation'];
-      $filtered    = array_filter($this->pairs, function($pair) use($partial_key) {
+      $filtered    = seq_filter($this->pairs, function($pair) use($partial_key) {
             return array_take_right($pair[0], 1) == $partial_key;
          });
-      $expected    = array_map('array_flat', to_seq($filtered));
+      $expected    = array_map('array_flat', $filtered);
       $this->assertEquals($expected, $cm->endWith($partial_key)->toArrays());
    }
 
@@ -196,10 +196,10 @@ class CombinationMapTest extends PHPUnit_Framework_TestCase
    function testHave($cm)
    {
       $partial_key = ['linux', 'ubuntu'];
-      $filtered    = array_filter($this->pairs, function($pair) use($partial_key) {
+      $filtered    = seq_filter($this->pairs, function($pair) use($partial_key) {
             return array_for_all($partial_key, function($word) use($pair) { return in_array($word, $pair[0]); });
          });
-      $expected    = array_map('array_flat', to_seq($filtered));
+      $expected    = array_map('array_flat', $filtered);
       $this->assertEquals($expected, $cm->have($partial_key)->toArrays());
    }
 
