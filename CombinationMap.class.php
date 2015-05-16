@@ -20,8 +20,8 @@ class CombinationMap
 
    function __construct($delimiter = ',')
    {
-      ensure_string   ($delimiter, 'The first argument');
-      ensure_non_empty($delimiter, 'The first argument');
+      ensure_string   ($delimiter, SUBJECT_FOR_FIRST_ARGUMENT);
+      ensure_non_empty($delimiter, SUBJECT_FOR_FIRST_ARGUMENT);
 
       $this->delimiter        = $delimiter;
       $this->quoted_delimiter = $this->quote($delimiter);
@@ -56,7 +56,7 @@ class CombinationMap
    {
       $cm = new CombinationMap($delimiter);
       foreach ($arrays as $array) {
-         ensure_array($array, 'Each element');
+         ensure_array($array, 'Each element of the first argument');
          list($combination, $value) = array_depeditate($array);
          $cm->set($combination, $value);
       }
@@ -86,7 +86,7 @@ class CombinationMap
 
    function apply(array $combination, $closure)
    {
-      ensure_callable($closure, 'The second argument');
+      ensure_callable($closure, SUBJECT_FOR_SECOND_ARGUMENT);
 
       $key = $this->toKey($combination);
       $this->array[$key] = $closure(array_get($this->array, $key));
@@ -109,21 +109,21 @@ class CombinationMap
 
    function map($closure)
    {
-      ensure_callable($closure, 'The first argument');
+      ensure_callable($closure, SUBJECT_FOR_FIRST_ARGUMENT);
 
       return $this->baby(array_map($closure, $this->array));
    }
 
    function reduce($closure, $initialize)
    {
-      ensure_callable($closure, 'The first argument');
+      ensure_callable($closure, SUBJECT_FOR_FIRST_ARGUMENT);
 
       return array_reduce($this->array, $closure, $initialize);
    }
 
    function filter($closure)
    {
-      ensure_callable($closure, 'The first argument');
+      ensure_callable($closure, SUBJECT_FOR_FIRST_ARGUMENT);
 
       return $this->baby(array_filter($this->array, $closure));
    }
@@ -195,7 +195,7 @@ class CombinationMap
 
    private function toCombination($key)
    {
-      ensure_string($key, 'The first argument');
+      ensure_string($key, SUBJECT_FOR_FIRST_ARGUMENT);
 
       return explode($this->delimiter, $key);
    }
