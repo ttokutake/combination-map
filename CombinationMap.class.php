@@ -156,7 +156,7 @@ class CombinationMap
 
    function toAssociative()
    {
-      return array_reduce_with_key($this->array, function($carry, $key, $value) {
+      return assoc_reduce($this->array, function($carry, $key, $value) {
             return array_merge_recursive($carry, aoa_set(array(), $this->toCombination($key), $value));
          }, array());
    }

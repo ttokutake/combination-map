@@ -3,7 +3,7 @@
 ## Requirements
 
 - PHP 5.3 or higher
-- But PHP 5.5 or higher if you want to try phpunit's tests.
+- But PHP 5.5 or higher if you want to try [phpunit](https://phpunit.de/) tests.
 
 ## Licence
 
